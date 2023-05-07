@@ -1,23 +1,25 @@
-import { render, RenderPosition } from '../render';
-import PointEditView from '../view/point-edit';
+import { render } from '../render';
+import PointEdit from '../view/point-edit';
 import PointView from '../view/point';
 import SortView from '../view/sort';
 import TripList from '../view/trip-list';
-const WAYPOINT_COUNT = 3;
 
 export default class Trip {
-  constructor({ container }) {
+  constructor() {
     this.component = new TripList();
-    this.container = container;
   }
 
-  init() {
-    render(new SortView(), this.container, RenderPosition.BEFOREEND);
-    render(this.component, this.container);
-    render(new PointEditView(), this.component.getElement(), RenderPosition.BEFOREEND);
+  init(container, pointsModel) {
+    this.container = container;
+    this.pointsModel = pointsModel;
+    this.pointsList = [...this.pointsModel.getPoint()];
 
-    for (let i = 0; i < WAYPOINT_COUNT; i++) {
-      render(new PointView(), this.component.getElement(), RenderPosition.BEFOREEND);
+    render(new SortView(), this.container);
+    render(this.component, this.container);
+    render(new PointEdit(this.pointsList[0]), this.component.getElement());
+
+    for (let i = 0; i < this.pointsList.length; i++) {
+      render(new PointView(this.pointsList[i]), this.component.getElement());
     }
   }
 }
