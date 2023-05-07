@@ -53,13 +53,12 @@ export default class Trip {
       }
     };
 
-    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    pointComponent.setClickHandler(() => {
       replacePointToEdit();
       document.addEventListener('keydown', onEscKeyDown);
     });
 
-    pointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', (evt) => {
-      evt.preventDefault();
+    pointEditComponent.setClickHandler(()=> {
       replaceEditToPoint();
       document.removeEventListener('keydown', onEscKeyDown);
     });
