@@ -1,6 +1,6 @@
-import { getRandomArrayElement, getRandomNumber } from '../utils';
+import { getRandomArrayElement, getRandomNumber } from '../utils/utils';
 import { createRandomDates } from './dates';
-import { POINT_TYPES, DESCRIPTIONS, DESTINATIONS_NAMES, tripPrice, offerPrice, OFFER_TITLES } from './consts';
+import { POINT_TYPES, DESCRIPTIONS, DESTINATIONS_NAMES, tripPrice, offerPrice, OFFER_TITLES } from '../consts';
 
 const createPicture = () => ({
   src: `http://picsum.photos/248/152?r=${getRandomNumber(0, 10)}`,

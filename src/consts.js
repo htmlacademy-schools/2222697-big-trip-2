@@ -26,4 +26,12 @@ const tripPrice = {
   MAX: 1500
 };
 
-export { POINT_TYPES, OFFER_TITLES, DESCRIPTIONS, DESTINATIONS_NAMES, tripPrice, offerPrice };
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PAST: 'past'
+};
+
+const MAX_DAYS_GAP = 7;
+
+export { POINT_TYPES, OFFER_TITLES, DESCRIPTIONS, DESTINATIONS_NAMES, tripPrice, offerPrice, FilterType, MAX_DAYS_GAP };
