@@ -29,7 +29,7 @@ const createSortTemplate = () => (
   </form>`
 );
 
-export default class SortView {
+export default class Sort {
   getTemplate() {
     return createSortTemplate();
   }
