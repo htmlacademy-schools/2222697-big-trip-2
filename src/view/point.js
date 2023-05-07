@@ -5,6 +5,7 @@ const createPointTemplate = (point) => {
   const getDate = (date) => dayjs(date).format('D MMMM');
   const getTime = (date) => dayjs(date).format('hh:mm');
 
+
   return `<li class="trip-events__item">
     <div class="event">
       <time class="event__date" datetime="2019-03-18">${getDate(point['dateTo'])}</time>
