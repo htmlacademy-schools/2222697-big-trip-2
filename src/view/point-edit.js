@@ -15,7 +15,7 @@ const createPointEditTemplate = (point) => {
     let result = '';
     offers.forEach ((offer) => {
       result = `${result}<div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage">
             <label class="event__offer-label" for="event-offer-luggage-1">
               <span class="event__offer-title">${offer['title']}</span>
               &plus;&euro;&nbsp;
@@ -131,23 +131,25 @@ const createPointEditTemplate = (point) => {
 };
 
 export default class PointEditView {
+  #element = null;
+  #point = null;
   constructor(point) {
-    this.point = point;
+    this.#point = point;
   }
 
-  getTemplate() {
-    return createPointEditTemplate(this.point);
+  get template() {
+    return createPointEditTemplate(this.#point);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
