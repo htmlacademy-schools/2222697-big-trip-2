@@ -1,4 +1,4 @@
-import { getRandomArrayElement, getRandomNumber } from '../utils/common.js';
+import { getRandomArrayElement, getRandomNumber } from '../utils/util';
 import { createRandomDates } from './dates';
 import { POINT_TYPES, DESCRIPTIONS, DESTINATIONS_NAMES, tripPrice, offerPrice, OFFER_TITLES, picturesCount, POINTS_COUNT } from './consts';
 import { nanoid } from 'nanoid';

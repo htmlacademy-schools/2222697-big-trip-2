@@ -1,7 +1,8 @@
 import { render, replace, remove } from '../framework/render.js';
 import PointView from '../view/point';
 import PointEditView from '../view/point-edit';
-import { isEscKeyDown } from '../utils/common.js';
+import {isEscKeyDown} from '../utils/util';
+import { UpdateType, UserAction } from '../mock/consts.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -13,7 +14,7 @@ export default class PointPresenter {
   #point = null;
   #mode = Mode.DEFAULT;
 
-  #pointsList = null;
+  #pointsListContainer = null;
   #changeData = null;
   #changeMode = null;
 
@@ -24,8 +25,10 @@ export default class PointPresenter {
   #destinations = null;
   #offers = null;
 
-  constructor(pointsList, pointsModel, changeData, changeMode) {
-    this.#pointsList = pointsList;
+  #isNewPoint = false;
+
+  constructor(pointsListContainer, pointsModel, changeData, changeMode) {
+    this.#pointsListContainer = pointsListContainer;
     this.#pointsModel = pointsModel;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
@@ -36,11 +39,16 @@ export default class PointPresenter {
     this.#destinations = [...this.#pointsModel.destinations];
     this.#offers = [...this.#pointsModel.offers];
 
-    const prevPointComponent = this.#pointComponent;
-    const prevPointEditComponent = this.#pointEditComponent;
+    const pointComponent = this.#pointComponent;
+    const pointEditComponent = this.#pointEditComponent;
 
     this.#pointComponent = new PointView(point, this.#destinations, this.#offers);
-    this.#pointEditComponent = new PointEditView(point, this.#destinations, this.#offers);
+    this.#pointEditComponent = new PointEditView({
+      point: point,
+      destination: this.#destinations,
+      offers: this.#offers,
+      isNewPoint: this.#isNewPoint
+    });
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
@@ -48,21 +56,23 @@ export default class PointPresenter {
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setCloseClickHandler(this.#handleCloseClick);
 
-    if (prevPointComponent === null || prevPointEditComponent === null) {
-      render(this.#pointComponent, this.#pointsList);
+    this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
+
+    if (pointComponent === null || pointEditComponent === null) {
+      render(this.#pointComponent, this.#pointsListContainer);
       return;
     }
 
     if (this.#mode === Mode.DEFAULT) {
-      replace(this.#pointComponent, prevPointComponent);
+      replace(this.#pointComponent, pointComponent);
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#pointEditComponent, prevPointEditComponent);
+      replace(this.#pointEditComponent, pointEditComponent);
     }
 
-    remove(prevPointComponent);
-    remove(prevPointEditComponent);
+    remove(pointComponent);
+    remove(pointEditComponent);
   };
 
   destroy = () => {
@@ -93,8 +103,7 @@ export default class PointPresenter {
   #onEscKeyDown = (evt) => {
     if (isEscKeyDown(evt)) {
       evt.preventDefault();
-      this.#pointEditComponent.reset(this.#point);
-      this.#replaceFormToPoint();
+      this.resetView();
     }
   };
 
@@ -103,17 +112,32 @@ export default class PointPresenter {
   };
 
   #handleFormSubmit = (point) => {
-    this.#changeData(point);
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
     this.#replaceFormToPoint();
   };
 
   #handleCloseClick = () => {
-    this.#pointEditComponent.reset(this.#point);
-    this.#replaceFormToPoint();
+    this.resetView();
   };
 
   #handleFavoriteClick = () => {
-    this.#changeData({ ...this.#point, isFavorite: !this.#point.isFavorite });
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      { ...this.#point, isFavorite: !this.#point.isFavorite },
+    );
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#changeData(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
   };
 
 }

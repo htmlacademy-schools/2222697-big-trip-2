@@ -11,7 +11,7 @@ const renderOffers = (allOffers, checkedOffers) => {
   return result;
 };
 
-const createWaypointTemplate = (point, destinations, offers) => {
+const createPointTemplate = (point, destinations, offers) => {
   const { basePrice, type, destinationId, isFavorite, dateFrom, dateTo, offerIds } = point;
 
   const offersByType = offers.find((offer) => offer.type === type);
@@ -67,7 +67,7 @@ export default class PointView extends AbstractView {
   }
 
   get template() {
-    return createWaypointTemplate(this.#point, this.#destination, this.#offers);
+    return createPointTemplate(this.#point, this.#destination, this.#offers);
   }
 
   setEditClickHandler = (callback) => {
