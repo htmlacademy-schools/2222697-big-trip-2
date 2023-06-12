@@ -1,9 +1,8 @@
-import {createElement} from '../render.js';
+import { getRandomNumber } from '../utils/utils';
 import dayjs from 'dayjs';
 import AbstractView from '../framework/view/abstract-view';
 
 const createPointEditTemplate = (point) => {
-
   const generatePictures = (pictures) => {
     let result = '';
     pictures.forEach((picture) => {
@@ -12,21 +11,22 @@ const createPointEditTemplate = (point) => {
     return result;
   };
 
-  const generateOffer = (offers) => {
+  const generateOffer = (allOffers) => {
     let result = '';
-    offers.forEach ((offer) => {
+    allOffers.forEach ((offer) => {
       result = `${result}<div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage">
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${getRandomNumber(0, 2 ) === 0 ? 'checked': ''}>
             <label class="event__offer-label" for="event-offer-luggage-1">
-              <span class="event__offer-title">${offer['title']}</span>
+              <span class="event__offer-title">${offer.title}</span>
               &plus;&euro;&nbsp;
-              <span class="event__offer-price">${offer['price']}</span>
+              <span class="event__offer-price">${offer.price}</span>
             </label>
           </div>`;
     });
     return result;
   };
   const getDateAndTime = (date) => dayjs(date).format('DD/MM/YY hh:mm');
+  const {offers, destination} = point;
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -34,7 +34,7 @@ const createPointEditTemplate = (point) => {
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
           <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/${point['type']}.png" alt="Event type icon">
+          <img class="event__type-icon" width="17" height="17" src="img/icons/${point.type}.png" alt="Event type icon">
         </label>
         <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
         <div class="event__type-list">
@@ -81,9 +81,9 @@ const createPointEditTemplate = (point) => {
       </div>
       <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">
-          ${point['type']}
+          ${point.type}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${point['destination']['name']}" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
         <datalist id="destination-list-1">
           <option value="Amsterdam"></option>
           <option value="Geneva"></option>
@@ -92,17 +92,17 @@ const createPointEditTemplate = (point) => {
       </div>
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDateAndTime(point['dateFrom'])}">
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDateAndTime(point.dateFrom)}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDateAndTime(point['dateTo'])}">
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDateAndTime(point.dateTo)}">
       </div>
       <div class="event__field-group  event__field-group--price">
         <label class="event__label" for="event-price-1">
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point['basePrice']}">
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point.basePrice}">
       </div>
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
       <button class="event__reset-btn" type="reset">Delete</button>
@@ -114,15 +114,15 @@ const createPointEditTemplate = (point) => {
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         <div class="event__available-offers">
-              ${generateOffer(point['offers']['offers'])}
+              ${generateOffer(offers)}
         </div>
       </section>
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${point['destination']['description']}</p>
+        <p class="event__destination-description">${destination.description}</p>
         <div class="event__photos-container">
           <div class="event__photos-tape">
-            ${generatePictures(point['destination']['pictures'])}
+            ${generatePictures(destination.pictures)}
           </div>
         </div>
       </section>
@@ -142,13 +142,23 @@ export default class PointEditView extends AbstractView {
     return createPointEditTemplate(this.#point);
   }
 
-  setClickHandler = (callback) => {
-    this._callback.click = callback;
-    this.element.addEventListener('click', this.#clickHandler);
+  setCloseClickHandler = (callback) => {
+    this._callback.closeClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeClickHandler);
   };
 
-  #clickHandler = (evt) => {
+  #closeClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.click();
+    this._callback.closeClick();
+  };
+
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit(this.#point);
   };
 }
