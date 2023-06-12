@@ -1,36 +1,47 @@
+import AbstractView from '../framework/view/abstract-view.js';
 import dayjs from 'dayjs';
-import AbstractView from '../framework/view/abstract-view';
 
-const createPointTemplate = (point) => {
+const renderOffers = (allOffers, checkedOffers) => {
+  let result = '';
+  allOffers.forEach((offer) => {
+    if (checkedOffers.includes(offer.id)) {
+      result = `${result}<li class="event__offer"><span class="event__offer-title">${offer.title}</span>&plus;&euro;&nbsp;<span class="event__offer-price">${offer.price}</span></li>`;
+    }
+  });
+  return result;
+};
+
+const createWaypointTemplate = (point, destinations, offers) => {
+  const { basePrice, type, destinationId, isFavorite, dateFrom, dateTo, offerIds } = point;
+
+  const offersByType = offers.find((offer) => offer.type === type);
+
   const getDate = (date) => dayjs(date).format('D MMMM');
   const getTime = (date) => dayjs(date).format('hh:mm');
-  const {offers, destination} = point;
 
   return `<li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="2019-03-18">${getDate(point.dateTo)}</time>
+      <time class="event__date" datetime="${dateFrom}">${getDate(dateFrom)}</time>
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/${point.type}.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event ${type} icon">
       </div>
-      <h3 class="event__title">${point.type} ${destination.name}</h3>
+      <h3 class="event__title">${type} ${destinations[destinationId].name}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${point.dateFrom}">${(getDate(point.dateTo) === (getDate(point.dateFrom)) ? getTime(point.dateFrom) : getDate(point.dateFrom))}</time>
+          <time class="event__start-time" datetime="${dateFrom}">${(getDate(dateTo) === (getDate(dateFrom)) ? getTime(dateFrom) : getDate(dateFrom))}</time>
           &mdash;
-          <time class="event__end-time" datetime="${point.dateTo}">${(getDate(point.dateTo) === (getDate(point.dateFrom)) ? getTime(point.dateTo) : getDate(point.dateTo))}</time>
+          <time class="event__end-time" datetime="${dateTo}">${(getDate(dateTo) === (getDate(dateFrom)) ? getTime(dateTo) : getDate(dateTo))}</time>
         </p>
         <p class="event__duration">30M</p>
       </div>
       <p class="event__price">
-        &euro;&nbsp;<span class="event__price-value">${point.basePrice}</span>
+        &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        <span class="event__offer-title">${offers[0].title}</span>
-          &plus;&euro;&nbsp;
-        <span class="event__offer-price">${offers[0].price}</span>
+        ${renderOffers(offersByType.offers, offerIds)}
       </ul>
-      <button class="event__favorite-btn ${point.isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
+      <button class="event__favorite-btn ${isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
         <span class="visually-hidden">Add to favorite</span>
         <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
           <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z" />
@@ -45,13 +56,18 @@ const createPointTemplate = (point) => {
 
 export default class PointView extends AbstractView {
   #point = null;
-  constructor(point) {
+  #destination = null;
+  #offers = null;
+
+  constructor(point, destination, offers) {
     super();
     this.#point = point;
+    this.#destination = destination;
+    this.#offers = offers;
   }
 
   get template() {
-    return createPointTemplate(this.#point);
+    return createWaypointTemplate(this.#point, this.#destination, this.#offers);
   }
 
   setEditClickHandler = (callback) => {
@@ -73,4 +89,5 @@ export default class PointView extends AbstractView {
     evt.preventDefault();
     this._callback.favoriteClick();
   };
+
 }
