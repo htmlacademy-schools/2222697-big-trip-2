@@ -1,21 +1,21 @@
 import dayjs from 'dayjs';
 import { SortType } from '../mock/consts';
 
-const sortPointsDayUp = (pointA, pointB) => dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
+const sortPointsDay = (pointA, pointB) => dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 
-const sortPointsTimeUp = (pointA, pointB) => {
+const sortPointsTime = (pointA, pointB) => {
   const timeA = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
   const timeB = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
 
   return timeA - timeB;
 };
 
-const sortPointsPriceUp = (pointA, pointB) => pointA.basePrice - pointB.basePrice;
+const sortPointsPrice = (pointA, pointB) => pointA.basePrice - pointB.basePrice;
 
 const sorting = {
-  [SortType.DAY]: (points) => points.sort(sortPointsDayUp),
-  [SortType.PRICE]: (points) => points.sort(sortPointsPriceUp),
-  [SortType.TIME]: (points) => points.sort(sortPointsTimeUp),
+  [SortType.DAY]: (points) => points.sort(sortPointsDay),
+  [SortType.PRICE]: (points) => points.sort(sortPointsPrice),
+  [SortType.TIME]: (points) => points.sort(sortPointsTime),
 };
 
 export { sorting };
