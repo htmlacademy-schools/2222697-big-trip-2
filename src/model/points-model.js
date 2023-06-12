@@ -1,10 +1,23 @@
-import { createPoint } from '../mock/point';
-
 export default class pointsModel {
+  #points = [];
+  #destinations = [];
+  #offers = [];
 
-  #point = Array.from({ length: 5 }, createPoint);
+  init(points, destinations, offers) {
+    this.#points = points;
+    this.#destinations = destinations;
+    this.#offers = offers;
+  }
 
-  get point() {
-    return this.#point;
+  get points() {
+    return this.#points;
+  }
+
+  get destinations() {
+    return this.#destinations;
+  }
+
+  get offers() {
+    return this.#offers;
   }
 }

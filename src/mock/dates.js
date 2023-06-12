@@ -1,9 +1,8 @@
 import dayjs from 'dayjs';
-import { getRandomNumber } from '../utils/utils';
-import {MAX_DAYS_GAP} from '../consts';
+import { getRandomNumber } from '../utils/common.js';
 
 const getRandomDate = () => dayjs()
-  .add(getRandomNumber(-MAX_DAYS_GAP, MAX_DAYS_GAP), 'day')
+  .add(getRandomNumber(1, 7), 'day')
   .add(getRandomNumber(1, 23), 'hour')
   .add(getRandomNumber(1, 59), 'minute');
 
