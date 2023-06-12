@@ -32,6 +32,12 @@ const FilterType = {
   PAST: 'past'
 };
 
+const SortType = {
+  DAY: 'day',
+  TIME: 'time',
+  PRICE: 'price'
+};
+
 const MAX_DAYS_GAP = 7;
 
-export { POINT_TYPES, OFFER_TITLES, DESCRIPTIONS, DESTINATIONS_NAMES, tripPrice, offerPrice, FilterType, MAX_DAYS_GAP };
+export { POINT_TYPES, OFFER_TITLES, DESCRIPTIONS, DESTINATIONS_NAMES, tripPrice, offerPrice, FilterType, MAX_DAYS_GAP, SortType };
