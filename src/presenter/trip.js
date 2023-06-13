@@ -4,32 +4,42 @@ import TripList from '../view/trip-list';
 import NoPointView from '../view/no-point';
 import PointPresenter from './point';
 import PointNewPresenter from './new-point';
-import { SortType, FilterType, UserAction, UpdateType } from '../mock/consts.js';
+import { SortType, FilterType, UserAction, UpdateType } from '../consts.js';
 import { sorting } from '../utils/sorting.js';
 import { filter } from '../utils/filter.js';
+import LoadingView from '../view/loading.js';
+
 
 export default class TripPresenter {
   #tripContainer = null;
   #pointsModel = null;
   #filterModel = null;
+  #destinationsModel = null;
+  #offersModel = null;
 
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
 
-  #tripListComponent = new TripList();
+  #pointsListComponent = new TripList();
   #sortComponent = null;
   #noPointComponent = null;
+  #loadingComponent = new LoadingView();
 
   #pointPresenter = new Map();
   #pointNewPresenter = null;
+  #isLoading = true;
 
-  constructor(tripContainer, pointsModel, filterModel) {
+  constructor(tripContainer, pointsModel, filterModel, destinationsModel, offersModel) {
     this.#tripContainer = tripContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
 
-    this.#pointNewPresenter = new PointNewPresenter(this.#tripListComponent.element, this.#handleViewAction, this.#pointsModel);
+    this.#pointNewPresenter = new PointNewPresenter(this.#pointsListComponent.element, this.#handleViewAction, this.#pointsModel, this.#destinationsModel, this.#offersModel);
 
+    this.#destinationsModel.addObserver(this.#handleModelEvent);
+    this.#offersModel.addObserver(this.#handleModelEvent);
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
@@ -53,6 +63,11 @@ export default class TripPresenter {
   };
 
   #renderTrip = () => {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const pointCount = this.points.length;
 
     if (pointCount === 0) {
@@ -60,7 +75,7 @@ export default class TripPresenter {
       return;
     }
     this.#renderSort();
-    this.#renderPointList();
+    this.#renderPointList(this.points);
   };
 
   #renderSort = () => {
@@ -76,7 +91,10 @@ export default class TripPresenter {
   };
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#tripListComponent.element, this.#pointsModel, this.#handleViewAction, this.#handleModeChange);
+    const pointPresenter = new PointPresenter(
+      this.#pointsListComponent.element, this.#pointsModel, this.#handleViewAction, this.#handleModeChange, this.#destinationsModel, this.#offersModel
+    );
+
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   };
@@ -85,9 +103,13 @@ export default class TripPresenter {
     points.forEach((point) => this.#renderPoint(point));
   };
 
-  #renderPointList = () => {
-    render(this.#tripListComponent, this.#tripContainer);
-    this.#renderPoints(this.points);
+  #renderPointList = (points) => {
+    render(this.#pointsListComponent, this.#tripContainer);
+    this.#renderPoints(points);
+  };
+
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#tripContainer, RenderPosition.AFTERBEGIN);
   };
 
   #clearAll = ({ resetSortType = false } = {}) => {
@@ -96,6 +118,7 @@ export default class TripPresenter {
     this.#pointPresenter.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (this.#noPointComponent) {
       remove(this.#noPointComponent);
@@ -145,6 +168,12 @@ export default class TripPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearAll({ resetSortType: true });
+        this.#renderTrip();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        remove(this.#noPointComponent);
         this.#renderTrip();
         break;
     }

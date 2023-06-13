@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import dayjs from 'dayjs';
+import he from 'he';
 
 const renderOffers = (allOffers, checkedOffers) => {
   let result = '';
@@ -11,10 +12,11 @@ const renderOffers = (allOffers, checkedOffers) => {
   return result;
 };
 
-const createPointTemplate = (point, destinations, offers) => {
-  const { basePrice, type, destinationId, isFavorite, dateFrom, dateTo, offerIds } = point;
+const createPointTemplate = (point, destinations, allOffers) => {
+  const { basePrice, type, destination, isFavorite, dateFrom, dateTo, offers } = point;
 
-  const offersByType = offers.find((offer) => offer.type === type);
+  const offersByType = allOffers.find((offer) => offer.type === type);
+  const currentDestination = destinations.find((item) => item.id === destination);
 
   const getDate = (date) => dayjs(date).format('D MMMM');
   const getTime = (date) => dayjs(date).format('hh:mm');
@@ -25,7 +27,7 @@ const createPointTemplate = (point, destinations, offers) => {
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event ${type} icon">
       </div>
-      <h3 class="event__title">${type} ${destinations[destinationId].name}</h3>
+      <h3 class="event__title">${type} ${currentDestination ? he.encode(currentDestination.name) : ''}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="${dateFrom}">${(getDate(dateTo) === (getDate(dateFrom)) ? getTime(dateFrom) : getDate(dateFrom))}</time>
@@ -39,7 +41,7 @@ const createPointTemplate = (point, destinations, offers) => {
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${renderOffers(offersByType.offers, offerIds)}
+        ${renderOffers(offersByType.offers, offers)}
       </ul>
       <button class="event__favorite-btn ${isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
         <span class="visually-hidden">Add to favorite</span>
@@ -89,5 +91,4 @@ export default class PointView extends AbstractView {
     evt.preventDefault();
     this._callback.favoriteClick();
   };
-
 }
