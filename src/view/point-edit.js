@@ -8,10 +8,10 @@ import he from 'he';
 import 'flatpickr/dist/flatpickr.min.css';
 
 const BLANK_POINT = {
-  basePrice: 0,
+  basePrice: 100,
   dateFrom: dayjs(),
   dateTo: dayjs().add(7, 'day'),
-  destination: 0,
+  destination: 1,
   isFavorite: false,
   offers: [],
   type: POINT_TYPES.TAXI,
@@ -34,13 +34,13 @@ const renderNames = (destinations) => {
   return result;
 };
 
-const renderOffers = (allOffers, checkedOffers) => {
+const renderOffers = (allOffers, checkedOffers, isDisabled) => {
   let result = '';
   allOffers.forEach((offer) => {
     const checked = checkedOffers.includes(offer.id) ? 'checked' : '';
     result = `${result}
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-luggage" ${checked}>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-luggage" ${checked} ${isDisabled ? 'disabled' : ''}>
       <label class="event__offer-label" for="event-offer-${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
@@ -51,23 +51,26 @@ const renderOffers = (allOffers, checkedOffers) => {
   return result;
 };
 
-const renderDate = (dateFrom, dateTo) => (
+const renderDate = (dateFrom, dateTo, isDisabled) => (
   `<div class="event__field-group  event__field-group--time">
     <label class="visually-hidden" for="event-start-time-1">From</label>
-    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDateTime(dateFrom)}">
+    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDateTime(dateFrom)}"
+    ${isDisabled ? 'disabled' : ''}>
     &mdash;
     <label class="visually-hidden" for="event-end-time-1">To</label>
-    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDateTime(dateTo)}">
+    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDateTime(dateTo)}"
+    ${isDisabled ? 'disabled' : ''}>
   </div>`
 );
 
-const renderType = (currentType) => Object.values(POINT_TYPES).map((type) => `<div class="event__type-item">
-<input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}>
+const renderType = (currentType, isDisabled) => Object.values(POINT_TYPES).map((type) => `<div class="event__type-item">
+<input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}
+${isDisabled ? 'disabled' : ''}>
 <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
 </div>`).join('');
 
 const createPointEditTemplate = (point, destinations, allOffers, isNewPoint) => {
-  const { basePrice, type, destination, dateFrom, dateTo, offers } = point;
+  const { basePrice, type, destination, dateFrom, dateTo, offers, isDisabled, isSaving, isDeleting } = point;
   const offersByType = allOffers.find((offer) => offer.type === type);
   const currentDestination = destinations.find((item) => item.id === destination);
 
@@ -79,11 +82,11 @@ const createPointEditTemplate = (point, destinations, allOffers, isNewPoint) => 
           <span class="visually-hidden">Choose event type</span>
           <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event ${type} icon">
         </label>
-        <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+        <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
-            ${renderType(type)}
+            ${renderType(type, isDisabled)}
           </fieldset>
         </div>
       </div>
@@ -91,23 +94,25 @@ const createPointEditTemplate = (point, destinations, allOffers, isNewPoint) => 
         <label class="event__label  event__type-output" for="event-destination-${destination}">
         ${type}
         </label>
-        <input class="event__input event__input--destination" id="event-destination-${destination}" type="text" name="event-destination" value="${currentDestination ? he.encode(currentDestination.name) : ''}" list="destination-list-1">
+        <input class="event__input event__input--destination" id="event-destination-${destination}" type="text" name="event-destination"
+        value="${currentDestination ? he.encode(currentDestination.name) : ''}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
         <datalist id="destination-list-1">
           ${renderNames(destinations)}
         </datalist>
       </div>
-      ${renderDate(dateFrom, dateTo)}
+      ${renderDate(dateFrom, dateTo, isDisabled)}
       <div class="event__field-group  event__field-group--price">
         <label class="event__label" for="event-price-1">
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
+        <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price"
+        value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
       </div>
 
-      <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      ${isNewPoint ? '<button class="event__reset-btn" type="reset">Cancel</button>' :
-      `<button class="event__reset-btn" type="reset">Delete</button>
+      <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+      ${isNewPoint ? `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>Cancel</button>` :
+      `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
        <button class="event__rollup-btn" type="button">`}
         <span class="visually-hidden">Open event</span>
       </button>
@@ -117,7 +122,7 @@ const createPointEditTemplate = (point, destinations, allOffers, isNewPoint) => 
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         <div class="event__available-offers">
-        ${renderOffers(offersByType.offers, offers)}
+        ${renderOffers(offersByType.offers, offers, isDisabled)}
         </div>
       </section>
 
@@ -152,9 +157,8 @@ export default class PointEditView extends AbstractStatefulView {
     this.#offers = offers;
     this.#isNewPoint = isNewPoint;
     this.#offersByType = this.#offers.find((offer) => offer.type === this._state.type);
-    this.#setInnerHandlers();
-    this.#setDatepickerFrom();
-    this.#setDatepickerTo();
+
+    this._restoreHandlers();
   }
 
   get template() {
@@ -234,7 +238,7 @@ export default class PointEditView extends AbstractStatefulView {
   #pointPriceChangeHandler = (evt) => {
     evt.preventDefault();
     this._setState({
-      basePrice: `${Number(evt.target.value).toString()}`,
+      basePrice: Number(evt.target.value),
     });
   };
 
@@ -324,11 +328,18 @@ export default class PointEditView extends AbstractStatefulView {
   static parsePointToState = (point) => ({
     ...point,
     dateTo: dayjs(point.dateTo).toDate(),
-    dateFrom: dayjs(point.dateFrom).toDate()
+    dateFrom: dayjs(point.dateFrom).toDate(),
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
   });
 
   static parseStateToPoint = (state) => {
     const point = { ...state };
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+
     return point;
   };
 }

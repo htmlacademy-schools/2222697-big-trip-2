@@ -1,7 +1,7 @@
 import ApiService from './framework/api-service.js';
 import { Method } from './consts.js';
 
-export default class PointsApi extends ApiService {
+export default class PointsApiService extends ApiService {
   get points() {
     return this._load({ url: 'points' })
       .then(ApiService.parseResponse);
@@ -17,10 +17,10 @@ export default class PointsApi extends ApiService {
       .then(ApiService.parseResponse);
   }
 
-  updatePoint = async (point) => {
+  addPoint = async (point) => {
     const response = await this._load({
-      url: `points/${point.id}`,
-      method: Method.PUT,
+      url: 'points',
+      method: Method.POST,
       body: JSON.stringify(this.#adaptToServer(point)),
       headers: new Headers({ 'Content-Type': 'application/json' }),
     });
@@ -30,24 +30,20 @@ export default class PointsApi extends ApiService {
     return parsedResponse;
   };
 
-  updateOffer = async (offer) => {
+  deletePoint = async (point) => {
     const response = await this._load({
-      url: `offers/${offer.type}`,
-      method: Method.PUT,
-      body: JSON.stringify(offer),
-      headers: new Headers({ 'Content-Type': 'application/json' }),
+      url: `points/${point.id}`,
+      method: Method.DELETE,
     });
 
-    const parsedResponse = await ApiService.parseResponse(response);
-
-    return parsedResponse;
+    return response;
   };
 
-  updateDestination = async (destination) => {
+  updatePoint = async (point) => {
     const response = await this._load({
-      url: `destinations/${destination.id}`,
+      url: `points/${point.id}`,
       method: Method.PUT,
-      body: JSON.stringify(destination),
+      body: JSON.stringify(this.#adaptToServer(point)),
       headers: new Headers({ 'Content-Type': 'application/json' }),
     });
 
