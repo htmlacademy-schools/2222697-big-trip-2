@@ -1,7 +1,7 @@
 import { render, remove, RenderPosition } from '../framework/render.js';
-import PointEditView from '../view/point-edit';
 import { isEscKeyDown } from '../utils/util';
 import { UpdateType, UserAction } from '../consts';
+import PointEditView from '../view/point-edit';
 
 export default class PointNewPresenter {
 

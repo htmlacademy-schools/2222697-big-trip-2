@@ -1,17 +1,13 @@
 import {render} from './framework/render';
 import TripPresenter from './presenter/trip';
 import PointsModel from './model/points-model.js';
-
 import FiltersModel from './model/filters-model';
 import FilterPresenter from './presenter/filter';
 import NewPointButtonView from './view/new-point-button';
 import PointsApi from './points-api';
 import OffersModel from './model/offers-model.js';
 import DestinationsModel from './model/destinations-model.js';
-
-
-const AUTHORIZATION = 'Basic pudge2281337'; //
-const END_POINT = 'https://18.ecmascript.pages.academy/big-trip'; //
+import {AUTHORIZATION, END_POINT} from './consts';
 
 const mainElement = document.querySelector('.page-main');
 const headerElement = document.querySelector('.trip-main');
@@ -27,8 +23,7 @@ const filterModel = new FiltersModel();
 const filterPresenter = new FilterPresenter(headerElement.querySelector('.trip-controls__filters'), filterModel, pointsModel);
 filterPresenter.init();
 
-const tripPresenter = new TripPresenter(mainElement.querySelector('.trip-events'), pointsModel, filterModel, destinationsModel, offersModel);
-tripPresenter.init();
+const tripPresenter = new TripPresenter(headerElement.querySelector('.trip-main__trip-info'), mainElement.querySelector('.trip-events'), pointsModel, filterModel, destinationsModel, offersModel);
 
 const handleNewPointFormClose = () => {
   newPointButtonComponent.element.disabled = false;

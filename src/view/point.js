@@ -1,6 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import dayjs from 'dayjs';
 import he from 'he';
+import { getDays, getHours, getMinutes } from '../utils/point.js';
 
 const renderOffers = (allOffers, checkedOffers) => {
   let result = '';
@@ -12,9 +13,19 @@ const renderOffers = (allOffers, checkedOffers) => {
   return result;
 };
 
+const getDuration = (dateFrom, dateTo) => {
+  const diff = dayjs(dateTo).diff(dayjs(dateFrom), 'minutes');
+
+  const days = Math.floor(diff / 1440);
+  const hours = Math.floor(diff / 60);
+  const minutes = diff;
+
+  const duration = `${getDays(days)} ${getHours(hours)} ${getMinutes(minutes)}`;
+  return duration;
+};
+
 const createPointTemplate = (point, destinations, allOffers) => {
   const { basePrice, type, destination, isFavorite, dateFrom, dateTo, offers } = point;
-
   const offersByType = allOffers.find((offer) => offer.type === type);
   const currentDestination = destinations.find((item) => item.id === destination);
 
@@ -34,7 +45,7 @@ const createPointTemplate = (point, destinations, allOffers) => {
           &mdash;
           <time class="event__end-time" datetime="${dateTo}">${(getDate(dateTo) === (getDate(dateFrom)) ? getTime(dateTo) : getDate(dateTo))}</time>
         </p>
-        <p class="event__duration">30M</p>
+        <p class="event__duration">${getDuration(dateFrom, dateTo)}</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
