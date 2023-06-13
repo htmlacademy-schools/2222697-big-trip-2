@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
@@ -16,6 +18,7 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 const UserAction = {
@@ -51,4 +54,17 @@ const POINT_TYPES = {
   RESTAURANT: 'restaurant'
 };
 
-export { POINT_TYPES, FilterType, SortType, UpdateType, UserAction, Method, Mode, TimeLimit };
+const PATTERN_POINT = {
+  basePrice: 100,
+  dateFrom: dayjs(),
+  dateTo: dayjs().add(7, 'day'),
+  destination: 1,
+  isFavorite: false,
+  offers: [],
+  type: POINT_TYPES.TAXI,
+};
+
+const AUTHORIZATION = 'Basic lublupizzuochenblublu';
+const END_POINT = 'https://18.ecmascript.pages.academy/big-trip';
+
+export { POINT_TYPES, FilterType, SortType, UpdateType, UserAction, Method, Mode, TimeLimit, PATTERN_POINT, AUTHORIZATION, END_POINT };

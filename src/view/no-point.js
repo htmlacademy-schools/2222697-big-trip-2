@@ -8,10 +8,10 @@ const NoPointsTextType = {
 };
 
 const createNoPointTemplate = (filterType) => {
-  const noTaskTextValue = NoPointsTextType[filterType];
+  const noTextValue = NoPointsTextType[filterType];
 
   return (
-    `<p class="trip-events__msg">${noTaskTextValue}</p>`
+    `<p class="trip-events__msg">${noTextValue}</p>`
   );
 };
 
