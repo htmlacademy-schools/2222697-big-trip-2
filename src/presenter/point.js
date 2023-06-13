@@ -1,13 +1,8 @@
 import { render, replace, remove } from '../framework/render.js';
 import PointView from '../view/point';
 import PointEditView from '../view/point-edit';
-import {isEscKeyDown} from '../utils/util';
-import { UpdateType, UserAction } from '../mock/consts.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING'
-};
+import { isEscKeyDown } from '../utils/util';
+import { Mode, UpdateType, UserAction } from '../consts.js';
 
 export default class PointPresenter {
 
@@ -22,32 +17,35 @@ export default class PointPresenter {
   #pointEditComponent = null;
 
   #pointsModel = null;
+  #destinationsModel = null;
+  #offersModel = null;
+
   #destinations = null;
   #offers = null;
 
-  #isNewPoint = false;
-
-  constructor(pointsListContainer, pointsModel, changeData, changeMode) {
+  constructor(pointsListContainer, pointsModel, changeData, changeMode, destinationsModel, offersModel) {
     this.#pointsListContainer = pointsListContainer;
     this.#pointsModel = pointsModel;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
   }
 
   init = (point) => {
     this.#point = point;
-    this.#destinations = [...this.#pointsModel.destinations];
-    this.#offers = [...this.#pointsModel.offers];
+    this.#destinations = [...this.#destinationsModel.destinations];
+    this.#offers = [...this.#offersModel.offers];
 
     const pointComponent = this.#pointComponent;
     const pointEditComponent = this.#pointEditComponent;
 
     this.#pointComponent = new PointView(point, this.#destinations, this.#offers);
     this.#pointEditComponent = new PointEditView({
-      point: point,
+      point,
       destination: this.#destinations,
       offers: this.#offers,
-      isNewPoint: this.#isNewPoint
+      isNewPoint: false
     });
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);

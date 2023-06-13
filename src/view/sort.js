@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { SortType } from '../mock/consts.js';
+import { SortType } from '../consts.js';
 
 const createSortTemplate = (currentSortType) => (
   `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
@@ -57,4 +57,4 @@ export default class SortView extends AbstractView {
     this._callback.sortTypeChange(evt.target.dataset.sortType);
   };
 
-} 
+}

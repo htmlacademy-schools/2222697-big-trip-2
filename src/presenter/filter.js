@@ -1,5 +1,5 @@
 import { remove, replace, render } from '../framework/render.js';
-import { FilterType, UpdateType } from '../mock/consts.js';
+import { FilterType, UpdateType } from '../consts.js';
 import { filter } from '../utils/filter';
 import FiltersView from '../view/filters';
 
