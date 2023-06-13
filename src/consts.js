@@ -29,6 +29,11 @@ const Mode = {
   EDITING: 'EDITING'
 };
 
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
@@ -46,4 +51,4 @@ const POINT_TYPES = {
   RESTAURANT: 'restaurant'
 };
 
-export { POINT_TYPES, FilterType, SortType, UpdateType, UserAction, Method, Mode };
+export { POINT_TYPES, FilterType, SortType, UpdateType, UserAction, Method, Mode, TimeLimit };
