@@ -1,21 +1,11 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { POINT_TYPES } from '../consts.js';
+import { POINT_TYPES, PATTERN_POINT } from '../consts.js';
 import { getDateTime } from '../utils/point.js';
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
-
-const BLANK_POINT = {
-  basePrice: 100,
-  dateFrom: dayjs(),
-  dateTo: dayjs().add(7, 'day'),
-  destination: 1,
-  isFavorite: false,
-  offers: [],
-  type: POINT_TYPES.TAXI,
-};
 
 const renderPictures = (pictures) => {
   let result = '';
@@ -25,7 +15,7 @@ const renderPictures = (pictures) => {
   return result;
 };
 
-const renderNames = (destinations) => {
+const renderDestinations = (destinations) => {
   let result = '';
   destinations.forEach((destination) => {
     result = `${result}
@@ -97,7 +87,7 @@ const createPointEditTemplate = (point, destinations, allOffers, isNewPoint) => 
         <input class="event__input event__input--destination" id="event-destination-${destination}" type="text" name="event-destination"
         value="${currentDestination ? he.encode(currentDestination.name) : ''}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
         <datalist id="destination-list-1">
-          ${renderNames(destinations)}
+          ${renderDestinations(destinations)}
         </datalist>
       </div>
       ${renderDate(dateFrom, dateTo, isDisabled)}
@@ -150,7 +140,7 @@ export default class PointEditView extends AbstractStatefulView {
 
   #datepicker = null;
 
-  constructor({ point = BLANK_POINT, destination, offers, isNewPoint }) {
+  constructor({ point = PATTERN_POINT, destination, offers, isNewPoint }) {
     super();
     this._state = PointEditView.parsePointToState(point);
     this.#destination = destination;

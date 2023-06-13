@@ -1,8 +1,9 @@
 import { render, replace, remove } from '../framework/render.js';
+import { isEscKeyDown } from '../utils/util';
+import { Mode, UpdateType, UserAction } from '../consts';
 import PointView from '../view/point';
 import PointEditView from '../view/point-edit';
-import { isEscKeyDown } from '../utils/util';
-import { Mode, UpdateType, UserAction } from '../consts.js';
+
 
 export default class PointPresenter {
 
@@ -16,16 +17,14 @@ export default class PointPresenter {
   #pointComponent = null;
   #pointEditComponent = null;
 
-  #pointsModel = null;
   #destinationsModel = null;
   #offersModel = null;
 
   #destinations = null;
   #offers = null;
 
-  constructor(pointsListContainer, pointsModel, changeData, changeMode, destinationsModel, offersModel) {
+  constructor(pointsListContainer, changeData, changeMode, destinationsModel, offersModel) {
     this.#pointsListContainer = pointsListContainer;
-    this.#pointsModel = pointsModel;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
     this.#destinationsModel = destinationsModel;
@@ -66,7 +65,8 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#pointEditComponent, pointEditComponent);
+      replace(this.#pointComponent, pointEditComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(pointComponent);
@@ -150,7 +150,6 @@ export default class PointPresenter {
       UpdateType.MINOR,
       point,
     );
-    this.#replaceFormToPoint();
   };
 
   #handleCloseClick = () => {
