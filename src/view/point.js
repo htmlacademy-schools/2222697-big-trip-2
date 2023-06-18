@@ -41,9 +41,9 @@ const createPointTemplate = (point, destinations, allOffers) => {
       <h3 class="event__title">${type} ${currentDestination ? he.encode(currentDestination.name) : ''}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${dateFrom}">${(getDate(dateTo) === (getDate(dateFrom)) ? getTime(dateFrom) : getDate(dateFrom))}</time>
+          <time class="event__start-time" datetime="${dateFrom}">${getTime(dateFrom)}</time>
           &mdash;
-          <time class="event__end-time" datetime="${dateTo}">${(getDate(dateTo) === (getDate(dateFrom)) ? getTime(dateTo) : getDate(dateTo))}</time>
+          <time class="event__end-time" datetime="${dateTo}">${getTime(dateTo)}</time>
         </p>
         <p class="event__duration">${getDuration(dateFrom, dateTo)}</p>
       </div>
