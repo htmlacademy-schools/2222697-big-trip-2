@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {getDateTime} from '../utils/point';
+import dayjs from 'dayjs';
 
 const renderRouteTrip = (points, destinations) => {
   if (points.length === 0) {
@@ -25,8 +25,8 @@ const renderDates = (points) => {
   if (points.length === 0) {
     return '';
   }
-  const start = getDateTime(points[0].dateFrom);
-  const end = getDateTime(points[points.length - 1].dateTo);
+  const start = dayjs(points[0].dateFrom).format('MMM D');
+  const end = dayjs(points[points.length - 1].dateTo).format('MMM D');
   return `${start}&nbsp;&mdash;&nbsp;${end}`;
 };
 

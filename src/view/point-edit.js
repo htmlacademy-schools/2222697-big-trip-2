@@ -296,13 +296,6 @@ export default class PointEditView extends AbstractStatefulView {
   };
 
   #pointFromDateChangeHandler = ([userDate]) => {
-    if (this.#dateTo < userDate) {
-      this.updateElement({
-        dateFrom: userDate,
-        dateTo: userDate
-      });
-      return;
-    }
     this.updateElement({
       dateFrom: userDate,
     });
@@ -312,7 +305,6 @@ export default class PointEditView extends AbstractStatefulView {
     this.updateElement({
       dateTo: userDate,
     });
-    this.#dateTo = userDate;
   };
 
   static parsePointToState = (point) => ({

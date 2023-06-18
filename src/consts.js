@@ -40,6 +40,8 @@ const TimeLimit = {
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE'
 };
 
 const POINT_TYPES = {
