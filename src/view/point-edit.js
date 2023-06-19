@@ -197,7 +197,7 @@ export default class PointEditView extends AbstractStatefulView {
     evt.preventDefault();
     const destination = this.#destination.find((d) => d.name === evt.target.value);
     this.updateElement({
-      destination: destination.id,
+      destination: destination?.id,
     });
   };
 
@@ -273,6 +273,7 @@ export default class PointEditView extends AbstractStatefulView {
           dateFormat: 'd/m/y H:i',
           'time_24hr': true,
           defaultDate: this._state.dateFrom,
+          maxDate: this._state.dateTo,
           onChange: this.#pointFromDateChangeHandler,
         },
       );
